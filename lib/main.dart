@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:math' as math;
 import 'main1.dart' as main1;
 import 'thuchanh4_bai3.dart' as lib;
+import 'thuchanh4_bai1.dart' as shop;
 import 'services/fcm_service.dart';
 
 void main() async {
@@ -309,13 +310,13 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Quản lý Chi tiêu'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.library_books),
-            tooltip: 'Chuyển sang Quản lý Thư viện',
+            icon: const Icon(Icons.shop),
+            tooltip: 'Chuyển sang Shop Online',
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const lib.LibraryApp(),
+                  builder: (context) => const shop.ShopOnline(),
                 ),
               );
             },
