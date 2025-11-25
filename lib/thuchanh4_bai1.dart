@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'thuchanh4_bai3.dart' as thuVien;
+import 'thuchanh4_bai2.dart' as truongHoc;
 
 
 class Product {
@@ -87,8 +88,27 @@ class CartProvider extends ChangeNotifier {
 
 
 
-class ShopOnline extends StatelessWidget {
+class ShopOnline extends StatefulWidget {
   const ShopOnline({super.key});
+
+  @override
+  State<ShopOnline> createState() => _ShopOnlineState();
+}
+
+class _ShopOnlineState extends State<ShopOnline> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    const ProductListScreen(),
+    const CartScreen(),
+    const HistoryScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,18 +123,27 @@ class ShopOnline extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
-        // Kiểm tra trạng thái đăng nhập để điều hướng
-        home: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasData) {
-              return const ProductListScreen();
-            }
-            return const LoginScreen();
-          },
+        home: Scaffold(
+          body: _screens[_selectedIndex],
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Sản phẩm',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart),
+                label: 'Giỏ hàng',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.history),
+                label: 'Lịch sử',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.blue.shade700,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );
@@ -230,6 +259,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const thuVien.LibraryApp(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.school),
+            tooltip: 'Chuyển sang Quản lý Trường học',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const truongHoc.SchoolManagementApp(),
                 ),
               );
             },
@@ -378,38 +419,203 @@ class CartScreen extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Giỏ hàng")),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cart.items.length,
-              itemBuilder: (ctx, index) {
-                final item = cart.items[index];
-                return ListTile(
-                  leading: Image.network(item.image, width: 50),
-                  title: Text(item.title),
-                  subtitle: Text('\$${item.price}'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => cart.removeFromCart(item),
+      appBar: AppBar(
+        title: const Text("Giỏ hàng"),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: cart.items.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text("Giỏ hàng trống", style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: cart.items.length,
+                      itemBuilder: (ctx, index) {
+                        final item = cart.items[index];
+                        return Card(
+                          elevation: 2,
+                          margin: const EdgeInsets.only(bottom: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(item.image, width: 50, height: 50, fit: BoxFit.cover),
+                            ),
+                            title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text('\$${item.price}', style: const TextStyle(color: Colors.green)),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => cart.removeFromCart(item),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            if (cart.items.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey.shade300)],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Tổng: \$${cart.getTotalPrice().toStringAsFixed(2)}",
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue.shade700),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () => _checkout(context, cart),
+                      child: const Text("Thanh toán", style: TextStyle(fontSize: 16)),
+                    ),
+                  ],
+                ),
+              )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- Màn hình Lịch sử Thanh toán (HistoryScreen) ---
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const Center(child: Text("Vui lòng đăng nhập"));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Lịch sử Thanh toán"),
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('orders')
+              .where('userId', isEqualTo: user.uid)
+              .orderBy('date', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text("Lỗi: ${snapshot.error}"));
+            }
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.history, size: 64, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text("Chưa có lịch sử thanh toán", style: TextStyle(fontSize: 18, color: Colors.grey)),
+                  ],
+                ),
+              );
+            }
+
+            final orders = snapshot.data!.docs;
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index].data() as Map<String, dynamic>;
+                final products = order['products'] as List<dynamic>;
+                final total = (order['total'] as num).toDouble();
+                final date = (order['date'] as Timestamp).toDate();
+
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Đơn hàng #${orders[index].id.substring(0, 8)}",
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "${date.day}/${date.month}/${date.year}",
+                              style: TextStyle(color: Colors.grey.shade600),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text("Số sản phẩm: ${products.length}", style: TextStyle(color: Colors.grey.shade700)),
+                        Text("Tổng tiền: \$${total.toStringAsFixed(2)}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
+                        const SizedBox(height: 8),
+                        ExpansionTile(
+                          title: const Text("Chi tiết sản phẩm"),
+                          children: products.map((p) => ListTile(
+                            leading: Image.network(p['image'], width: 40, height: 40, fit: BoxFit.cover),
+                            title: Text(p['title']),
+                            subtitle: Text("ID: ${p['id']}"),
+                          )).toList(),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(blurRadius: 5, color: Colors.grey.shade300)]),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Tổng: \$${cart.getTotalPrice().toStringAsFixed(2)}", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                ElevatedButton(onPressed: () => _checkout(context, cart), child: const Text("Thanh toán")),
-              ],
-            ),
-          )
-        ],
+            );
+          },
+        ),
       ),
     );
   }

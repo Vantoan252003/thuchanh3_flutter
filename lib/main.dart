@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:math' as math;
 import 'main1.dart' as main1;
-import 'thuchanh4_bai3.dart' as lib;
+import 'thuchanh4_bai3.dart' as thuVien;
 import 'thuchanh4_bai1.dart' as shop;
 import 'services/fcm_service.dart';
 
@@ -19,7 +19,7 @@ void main() async {
   // Khởi tạo FCM Service
   await FCMService().initialize();
 
-  runApp(const ExpenseTrackerApp());
+  runApp(const shop.ShopOnline());
 }
 
 class ExpenseTrackerApp extends StatelessWidget {
@@ -321,14 +321,26 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
+          // IconButton(
+          //   icon: const Icon(Icons.restaurant),
+          //   tooltip: 'Chuyển sang Đánh giá Nhà hàng',
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => const main1.RestaurantReviewApp(),
+          //       ),
+          //     );
+          //   },
+          // ),
           IconButton(
-            icon: const Icon(Icons.restaurant),
-            tooltip: 'Chuyển sang Đánh giá Nhà hàng',
+            icon: const Icon(Icons.library_books),
+            tooltip: 'Chuyển sang Thư viện',
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const main1.RestaurantReviewApp(),
+                  builder: (context) => const thuVien.LibraryApp(),
                 ),
               );
             },
