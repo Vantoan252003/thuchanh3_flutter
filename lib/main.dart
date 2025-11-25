@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:math' as math;
 import 'main1.dart' as main1;
+import 'thuchanh4_bai3.dart' as lib;
 import 'services/fcm_service.dart';
 
 void main() async {
@@ -307,6 +308,18 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Quản lý Chi tiêu'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.library_books),
+            tooltip: 'Chuyển sang Quản lý Thư viện',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const lib.LibraryApp(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.restaurant),
             tooltip: 'Chuyển sang Đánh giá Nhà hàng',
