@@ -22,8 +22,8 @@ class Recipe {
 final List<Recipe> recipes = [
   Recipe(
     name: 'Phở Bò',
-    // Đây là ảnh Offline (trong máy)
-    imageUrl: 'assets/pho.jpg',
+    // Đây là ảnh từ Internet
+    imageUrl: 'https://vnaroma.com/wp-content/uploads/2020/11/nau-pho-bo-voi-gia-vi-bot-huong-bo-01.jpg',
     description: 'Món ăn quốc hồn quốc túy của Việt Nam với nước dùng đậm đà.',
     ingredients: [
       '500g Bánh phở',
@@ -44,8 +44,8 @@ final List<Recipe> recipes = [
   ),
   Recipe(
     name: 'Bánh Mì Kẹp',
-    // Đây là ảnh Online
-    imageUrl: 'assets/banhmi.jpg',
+    // Đây là ảnh từ Internet
+    imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561612?w=500&h=500&fit=crop',
     description: 'Bánh mì giòn rụm kẹp thịt, pate và rau dưa chua ngọt.',
     ingredients: [
       '2 ổ Bánh mì',
@@ -65,8 +65,8 @@ final List<Recipe> recipes = [
   ),
   Recipe(
     name: 'Cà Phê Trứng',
-    // Đây là ảnh Online
-    imageUrl: 'assets/caphe.jpg',
+    // Đây là ảnh từ Internet
+    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&h=500&fit=crop',
     description: 'Đồ uống đặc sản Hà Nội với vị béo ngậy của trứng và thơm đắng của cà phê.',
     ingredients: [
       '2 lòng đỏ trứng gà',

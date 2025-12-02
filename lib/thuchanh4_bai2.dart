@@ -102,8 +102,23 @@ class SchoolManagementApp extends StatelessWidget {
     return MaterialApp(
       title: 'Quản lý Trường học',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        cardTheme: CardTheme(
+          elevation: 4,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
       ),
       home: const AuthWrapper(),
       debugShowCheckedModeBanner: false,
@@ -121,7 +136,8 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
           return const HomePage();
@@ -161,14 +177,17 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         // Đăng ký
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
         // Lưu thông tin user vào Firestore
-        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
           'email': _emailController.text.trim(),
           'name': _nameController.text.trim(),
           'role': _selectedRole,
@@ -188,93 +207,174 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isLogin ? 'Đăng nhập' : 'Đăng ký'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Mật khẩu',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập mật khẩu';
-                  }
-                  return null;
-                },
-              ),
-              if (!_isLogin) ...[
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Họ tên',
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập họ tên';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedRole,
-                  decoration: const InputDecoration(
-                    labelText: 'Vai trò',
-                    prefixIcon: Icon(Icons.school),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'student', child: Text('Học sinh')),
-                    DropdownMenuItem(value: 'parent', child: Text('Phụ huynh')),
-                    DropdownMenuItem(value: 'teacher', child: Text('Giáo viên')),
-                  ],
-                  onChanged: (value) {
-                    setState(() => _selectedRole = value!);
-                  },
-                ),
-              ],
-              const SizedBox(height: 24),
-              if (_isLoading)
-                const CircularProgressIndicator()
-              else
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _authenticate,
-                      child: Text(_isLogin ? 'Đăng nhập' : 'Đăng ký'),
-                    ),
-                    TextButton(
-                      onPressed: () => setState(() => _isLogin = !_isLogin),
-                      child: Text(_isLogin ? 'Chưa có tài khoản? Đăng ký' : 'Đã có tài khoản? Đăng nhập'),
-                    ),
-                  ],
-                ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.teal.shade700,
+              Colors.teal.shade400,
+              Colors.blue.shade400
             ],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Card(
+              elevation: 12,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24)),
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.school, size: 80, color: Colors.teal.shade700),
+                      const SizedBox(height: 20),
+                      Text(
+                        _isLogin ? "Đăng nhập" : "Đăng ký",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.teal.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Quản lý Trường học",
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.grey.shade600),
+                      ),
+                      const SizedBox(height: 30),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập email';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Mật khẩu',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập mật khẩu';
+                          }
+                          return null;
+                        },
+                      ),
+                      if (!_isLogin) ...[
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Họ tên',
+                            prefixIcon: const Icon(Icons.person_outline),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Vui lòng nhập họ tên';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedRole,
+                          decoration: InputDecoration(
+                            labelText: 'Vai trò',
+                            prefixIcon: const Icon(Icons.school_outlined),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                                value: 'student', child: Text('Học sinh')),
+                            DropdownMenuItem(
+                                value: 'parent', child: Text('Phụ huynh')),
+                            DropdownMenuItem(
+                                value: 'teacher', child: Text('Giáo viên')),
+                          ],
+                          onChanged: (value) {
+                            setState(() => _selectedRole = value!);
+                          },
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      if (_isLoading)
+                        const CircularProgressIndicator()
+                      else
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _authenticate,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade700,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  elevation: 4,
+                                ),
+                                child: Text(
+                                  _isLogin ? 'Đăng nhập' : 'Đăng ký',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton(
+                              onPressed: () =>
+                                  setState(() => _isLogin = !_isLogin),
+                              child: Text(
+                                _isLogin
+                                    ? 'Chưa có tài khoản? Đăng ký'
+                                    : 'Đã có tài khoản? Đăng nhập',
+                                style: TextStyle(
+                                    color: Colors.teal.shade700,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -309,7 +409,10 @@ class _HomePageState extends State<HomePage> {
   Future<AppUser?> _getCurrentUser() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       return AppUser.fromFirestore(doc);
     }
     return null;
@@ -321,7 +424,8 @@ class _HomePageState extends State<HomePage> {
       future: _userFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
 
         final user = snapshot.data;
@@ -330,13 +434,28 @@ class _HomePageState extends State<HomePage> {
         final List<Widget> pages = [
           HomeContent(user: user, onNavigateToTab: changeTab),
           SchedulePage(user: user),
-          user.role == 'teacher' ? TeacherGradesPage(user: user) : GradesPage(user: user),
+          user.role == 'teacher'
+              ? TeacherGradesPage(user: user)
+              : GradesPage(user: user),
           NotificationsPage(user: user),
         ];
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Xin chào ${user.name}'),
+            title: Text(
+              'Xin chào ${user.name}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.teal.shade700, Colors.teal.shade400],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+            foregroundColor: Colors.white,
             actions: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
@@ -404,9 +523,19 @@ class HomeContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Card(
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+            elevation: 8,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.teal.shade50, Colors.blue.shade50],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -416,7 +545,9 @@ class HomeContent extends StatelessWidget {
                         backgroundColor: Colors.blue.shade700,
                         radius: 30,
                         child: Text(
-                          user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U',
+                          user.name.isNotEmpty
+                              ? user.name[0].toUpperCase()
+                              : 'U',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -619,7 +750,8 @@ class HomeContent extends StatelessWidget {
                 ),
               ),
               if (onTap != null)
-                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+                Icon(Icons.arrow_forward_ios,
+                    size: 16, color: Colors.grey.shade400),
             ],
           ),
         ),
@@ -637,6 +769,18 @@ class SchedulePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Lịch học',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.teal.shade700, Colors.teal.shade400],
+            ),
+          ),
+        ),
+        foregroundColor: Colors.white,
+      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('schedule').snapshots(),
         builder: (context, snapshot) {
@@ -674,9 +818,18 @@ class SchedulePage extends StatelessWidget {
             schedulesByDay[schedule.day]!.add(schedule);
           }
 
-          final daysOrder = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+          final daysOrder = [
+            'Thứ 2',
+            'Thứ 3',
+            'Thứ 4',
+            'Thứ 5',
+            'Thứ 6',
+            'Thứ 7',
+            'Chủ nhật'
+          ];
           final sortedDays = schedulesByDay.keys.toList()
-            ..sort((a, b) => daysOrder.indexOf(a).compareTo(daysOrder.indexOf(b)));
+            ..sort(
+                (a, b) => daysOrder.indexOf(a).compareTo(daysOrder.indexOf(b)));
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -721,13 +874,15 @@ class SchedulePage extends StatelessWidget {
                     ...daySchedules.map((schedule) => ListTile(
                           leading: CircleAvatar(
                             backgroundColor: Colors.blue.shade50,
-                            child: Icon(Icons.book, color: Colors.blue.shade700),
+                            child:
+                                Icon(Icons.book, color: Colors.blue.shade700),
                           ),
                           title: Text(
                             schedule.subject,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text('${schedule.teacher}\n${schedule.time}'),
+                          subtitle:
+                              Text('${schedule.teacher}\n${schedule.time}'),
                           isThreeLine: true,
                         )),
                   ],
@@ -738,7 +893,7 @@ class SchedulePage extends StatelessWidget {
         },
       ),
       floatingActionButton: user.role == 'teacher'
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -747,8 +902,12 @@ class SchedulePage extends StatelessWidget {
                   ),
                 );
               },
-              backgroundColor: Colors.blue.shade700,
-              child: const Icon(Icons.add),
+              backgroundColor: Colors.teal.shade700,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add),
+              label: const Text('Tạo lịch',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              elevation: 8,
             )
           : null,
     );
@@ -782,8 +941,15 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tạo lịch học mới'),
-        backgroundColor: Colors.blue.shade700,
+        title: const Text('Tạo lịch học mới',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.teal.shade700, Colors.teal.shade400],
+            ),
+          ),
+        ),
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -861,13 +1027,20 @@ class _CreateSchedulePageState extends State<CreateSchedulePage> {
                           border: OutlineInputBorder(),
                         ),
                         items: const [
-                          DropdownMenuItem(value: 'Thứ 2', child: Text('Thứ 2')),
-                          DropdownMenuItem(value: 'Thứ 3', child: Text('Thứ 3')),
-                          DropdownMenuItem(value: 'Thứ 4', child: Text('Thứ 4')),
-                          DropdownMenuItem(value: 'Thứ 5', child: Text('Thứ 5')),
-                          DropdownMenuItem(value: 'Thứ 6', child: Text('Thứ 6')),
-                          DropdownMenuItem(value: 'Thứ 7', child: Text('Thứ 7')),
-                          DropdownMenuItem(value: 'Chủ nhật', child: Text('Chủ nhật')),
+                          DropdownMenuItem(
+                              value: 'Thứ 2', child: Text('Thứ 2')),
+                          DropdownMenuItem(
+                              value: 'Thứ 3', child: Text('Thứ 3')),
+                          DropdownMenuItem(
+                              value: 'Thứ 4', child: Text('Thứ 4')),
+                          DropdownMenuItem(
+                              value: 'Thứ 5', child: Text('Thứ 5')),
+                          DropdownMenuItem(
+                              value: 'Thứ 6', child: Text('Thứ 6')),
+                          DropdownMenuItem(
+                              value: 'Thứ 7', child: Text('Thứ 7')),
+                          DropdownMenuItem(
+                              value: 'Chủ nhật', child: Text('Chủ nhật')),
                         ],
                         onChanged: (value) {
                           setState(() => _selectedDay = value!);
@@ -983,7 +1156,8 @@ class StudentParentLinker extends StatelessWidget {
                       return const CircularProgressIndicator();
                     }
 
-                    final studentData = studentSnapshot.data!.data() as Map<String, dynamic>?;
+                    final studentData =
+                        studentSnapshot.data!.data() as Map<String, dynamic>?;
                     final parentId = studentData?['parentId'] as String?;
 
                     if (parentId == null) {
@@ -1007,7 +1181,8 @@ class StudentParentLinker extends StatelessWidget {
                       title: Text(parentName),
                       subtitle: Text(parentData['email'] ?? ''),
                       trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        icon:
+                            const Icon(Icons.remove_circle, color: Colors.red),
                         onPressed: () => _unlinkParent(context),
                       ),
                     );
@@ -1048,7 +1223,8 @@ class StudentParentLinker extends StatelessWidget {
                 shrinkWrap: true,
                 itemCount: parents.length,
                 itemBuilder: (context, index) {
-                  final parentData = parents[index].data() as Map<String, dynamic>;
+                  final parentData =
+                      parents[index].data() as Map<String, dynamic>;
                   final parentName = parentData['name'] ?? 'Phụ huynh';
                   final parentEmail = parentData['email'] ?? '';
 
@@ -1227,8 +1403,17 @@ class ParentViewGradesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Điểm của $studentName'),
-        backgroundColor: Colors.blue.shade700,
+        title: Text(
+          'Điểm của $studentName',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.teal.shade700, Colors.teal.shade400],
+            ),
+          ),
+        ),
         foregroundColor: Colors.white,
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -1256,8 +1441,8 @@ class ParentViewGradesPage extends StatelessWidget {
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
           final grades = (data['grades'] as List<dynamic>?)
-              ?.map((e) => GradeItem.fromMap(e as Map<String, dynamic>))
-              .toList() ??
+                  ?.map((e) => GradeItem.fromMap(e as Map<String, dynamic>))
+                  .toList() ??
               [];
 
           // Tính điểm trung bình
@@ -1426,8 +1611,8 @@ class GradesPage extends StatelessWidget {
 
         final data = snapshot.data!.data() as Map<String, dynamic>;
         final grades = (data['grades'] as List<dynamic>?)
-            ?.map((e) => GradeItem.fromMap(e as Map<String, dynamic>))
-            .toList() ??
+                ?.map((e) => GradeItem.fromMap(e as Map<String, dynamic>))
+                .toList() ??
             [];
 
         // Tính điểm trung bình
@@ -1442,47 +1627,64 @@ class GradesPage extends StatelessWidget {
             // Card điểm trung bình
             Container(
               margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue.shade700, Colors.blue.shade500],
+                  colors: [Colors.teal.shade400, Colors.teal.shade600],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.shade200,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+                    color: Colors.teal.withAlpha(80),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ],
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Điểm trung bình',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Tất cả các môn',
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(200),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(Icons.school,
+                        size: 48, color: Colors.teal.shade700),
                   ),
-                  Text(
-                    averageScore.toStringAsFixed(2),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Điểm trung bình',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          averageScore.toStringAsFixed(2),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 42,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          _getGradeText(averageScore),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -1540,6 +1742,13 @@ class GradesPage extends StatelessWidget {
     );
   }
 
+  String _getGradeText(double score) {
+    if (score >= 8) return 'Xếp loại: Giỏi';
+    if (score >= 6.5) return 'Xếp loại: Khá';
+    if (score >= 5) return 'Xếp loại: Trung bình';
+    return 'Xếp loại: Yếu';
+  }
+
   Color _getGradeColor(double score) {
     if (score >= 8) return Colors.green;
     if (score >= 6.5) return Colors.blue;
@@ -1564,102 +1773,104 @@ class _TeacherGradesPageState extends State<TeacherGradesPage> {
     return Stack(
       children: [
         StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .where('role', isEqualTo: 'student')
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Có lỗi xảy ra'));
-          }
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .where('role', isEqualTo: 'student')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(child: Text('Có lỗi xảy ra'));
+            }
 
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final students = snapshot.data!.docs;
+            final students = snapshot.data!.docs;
 
-          if (students.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.people, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('Chưa có học sinh nào'),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: students.length,
-            itemBuilder: (context, index) {
-              final studentData =
-                  students[index].data() as Map<String, dynamic>;
-              final studentName = studentData['name'] ?? 'Học sinh';
-              final studentId = students[index].id;
-
-              return Card(
-                elevation: 2,
-                margin: const EdgeInsets.only(bottom: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Icon(Icons.person, color: Colors.white),
-                  ),
-                  title: Text(
-                    studentName,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('ID: ${studentId.substring(0, 8)}...'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.visibility, color: Colors.blue),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ParentViewGradesPage(
-                                studentId: studentId,
-                                studentName: studentName,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add, color: Colors.green),
-                        onPressed: () {
-                          _showAddGradeDialog(context, studentId, studentName);
-                        },
-                      ),
-                    ],
-                  ),
+            if (students.isEmpty) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.people, size: 64, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text('Chưa có học sinh nào'),
+                  ],
                 ),
               );
-            },
-          );
-        },
-      ),
-      Positioned(
-        right: 16,
-        bottom: 16,
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            _showAddGradeToMultipleStudents(context);
+            }
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: students.length,
+              itemBuilder: (context, index) {
+                final studentData =
+                    students[index].data() as Map<String, dynamic>;
+                final studentName = studentData['name'] ?? 'Học sinh';
+                final studentId = students[index].id;
+
+                return Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      child: Icon(Icons.person, color: Colors.white),
+                    ),
+                    title: Text(
+                      studentName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('ID: ${studentId.substring(0, 8)}...'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.visibility, color: Colors.blue),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ParentViewGradesPage(
+                                  studentId: studentId,
+                                  studentName: studentName,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add, color: Colors.green),
+                          onPressed: () {
+                            _showAddGradeDialog(
+                                context, studentId, studentName);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
           },
-          backgroundColor: Colors.blue.shade700,
-          icon: const Icon(Icons.add_circle),
-          label: const Text('Thêm điểm nhanh'),
         ),
-      ),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              _showAddGradeToMultipleStudents(context);
+            },
+            backgroundColor: Colors.blue.shade700,
+            icon: const Icon(Icons.add_circle),
+            label: const Text('Thêm điểm nhanh'),
+          ),
+        ),
       ],
     );
   }
@@ -1716,7 +1927,8 @@ class _TeacherGradesPageState extends State<TeacherGradesPage> {
                   scoreController.text.isEmpty ||
                   semesterController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Vui lòng điền đầy đủ thông tin')),
+                  const SnackBar(
+                      content: Text('Vui lòng điền đầy đủ thông tin')),
                 );
                 return;
               }
@@ -1740,8 +1952,8 @@ class _TeacherGradesPageState extends State<TeacherGradesPage> {
                 List<Map<String, dynamic>> currentGrades = [];
                 if (doc.exists) {
                   final data = doc.data() as Map<String, dynamic>;
-                  currentGrades = List<Map<String, dynamic>>.from(
-                      data['grades'] ?? []);
+                  currentGrades =
+                      List<Map<String, dynamic>>.from(data['grades'] ?? []);
                 }
 
                 // Thêm điểm mới
@@ -1800,7 +2012,8 @@ class NotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('notifications').snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection('notifications').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Center(child: Text('Có lỗi xảy ra'));
