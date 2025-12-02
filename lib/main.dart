@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:math' as math;
 import 'main1.dart' as main1;
 import 'thuchanh4_bai3.dart' as thuVien;
@@ -10,17 +9,10 @@ import 'thuchanh4_bai1.dart' as shop;
 import 'thuchanh5_bai1.dart' as weather;
 import 'thuchanh5_bai2.dart' as recipe;
 import 'thuchanh5_bai3.dart' as social;
-import 'services/fcm_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  // Đăng ký background message handler
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-  // Khởi tạo FCM Service
-  await FCMService().initialize();
 
   runApp(const ExpenseTrackerApp());
 }
