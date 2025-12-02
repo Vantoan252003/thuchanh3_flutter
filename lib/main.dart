@@ -7,6 +7,9 @@ import 'dart:math' as math;
 import 'main1.dart' as main1;
 import 'thuchanh4_bai3.dart' as thuVien;
 import 'thuchanh4_bai1.dart' as shop;
+import 'thuchanh5_bai1.dart' as weather;
+import 'thuchanh5_bai2.dart' as recipe;
+import 'thuchanh5_bai3.dart' as social;
 import 'services/fcm_service.dart';
 
 void main() async {
@@ -19,7 +22,7 @@ void main() async {
   // Khởi tạo FCM Service
   await FCMService().initialize();
 
-  runApp(const shop.ShopOnline());
+  runApp(const ExpenseTrackerApp());
 }
 
 class ExpenseTrackerApp extends StatelessWidget {
@@ -309,39 +312,34 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Quản lý Chi tiêu'),
         actions: [
+      
           IconButton(
-            icon: const Icon(Icons.shop),
-            tooltip: 'Chuyển sang Shop Online',
+            icon: const Icon(Icons.cloud),
+            tooltip: 'Weather demo',
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const shop.ShopOnline(),
-                ),
+                MaterialPageRoute(builder: (context) => const weather.WeatherApp()),
               );
             },
           ),
-          // IconButton(
-          //   icon: const Icon(Icons.restaurant),
-          //   tooltip: 'Chuyển sang Đánh giá Nhà hàng',
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) => const main1.RestaurantReviewApp(),
-          //       ),
-          //     );
-          //   },
-          // ),
           IconButton(
             icon: const Icon(Icons.library_books),
-            tooltip: 'Chuyển sang Thư viện',
+            tooltip: 'Chuyển sang Thư viện (Recipes)',
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const thuVien.LibraryApp(),
-                ),
+                MaterialPageRoute(builder: (context) => const recipe.MyApp()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.photo_library),
+            tooltip: 'Mạng xã hội (Ảnh)',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const social.SocialScreen()),
               );
             },
           ),
